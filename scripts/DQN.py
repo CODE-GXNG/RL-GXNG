@@ -19,9 +19,9 @@ def main():
 
     model.save(MODEL_SAVE_PATH)
     for i in range(10):
-        print("Starting epoch {}".fomrat(i))
+        print("Starting epoch {}".format(i))
         model.learn(total_timesteps=10, log_interval=4)
-        print("Finished epoch {}".fomrat(i))
+        print("Finished epoch {}".format(i))
         model.save(MODEL_SAVE_PATH)
         model.save(MODEL_SAVE_PATH+"{}_timesteps".format(i))
         print("Saved model checkpoints")
@@ -30,6 +30,6 @@ def main():
     print("Done")
 
 
-    
+
 if __name__ == "__main__":
     main()
