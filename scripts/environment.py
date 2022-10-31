@@ -30,8 +30,9 @@ def get_actions():
     )
     return MOVE_ACTIONS + NAVIGATE_ACTIONS
 
-def get_reward_manager():
-
+def get_reward_manager(obs_keys):
+    observation_keys = list(obs_keys)
+    glyph_index = observation_keys.index("glyphs")
 
     reward_manager = RewardManager()
     reward_manager.add_eat_event("apple", reward=1)
@@ -41,15 +42,19 @@ def get_reward_manager():
     reward_manager.add_amulet_event()
     reward_manager.add_kill_event("demon")
 
-    def reward_fn(env, prev_obs, action, next_obs):
-        reward = 0.0
-        return reward
-    def scout_reward_fn(last_observation, action, observation, end_status):
+    # def reward_fn(env, prev_obs, action, next_obs):
+    #     reward = 0.0
+    #     return reward
+    def scout_reward_fn(env,last_observation, action, observation):
         '''
         https://github.com/facebookresearch/nle/blob/0c5d66f8902929ba3963d38780a23ff79b72e7e8/nle/env/tasks.py
         '''
-        glyphs = observation['glyphs']
-        last_glyphs = last_observation['glyphs']
+        obs_keys = env.observation_space.keys()
+        observation_keys = list(obs_keys)
+        glyph_index = observation_keys.index("glyphs")
+
+        glyphs = observation[glyph_index]
+        last_glyphs = last_observation[glyph_index]
 
         explored = np.sum(glyphs != nethack.GLYPH_CMAP_OFF)
         explored_old = np.sum(last_glyphs != nethack.GLYPH_CMAP_OFF)
@@ -58,7 +63,7 @@ def get_reward_manager():
 
         return reward 
 
-    # reward_manager.add_custom_reward_fn(scout_reward_fn)
+    reward_manager.add_custom_reward_fn(scout_reward_fn)
 
     return reward_manager
 
@@ -71,10 +76,11 @@ def get_obs_keys(pixel):
     else:return  ('glyphs','glyphs_crop','blstats','inv_glyphs')
 
 def init_env(pixel=False):
+    obs_keys = get_obs_keys(pixel)
     env = gym.make(
         "MiniHack-Quest-Hard-v0",
-        observation_keys=get_obs_keys(pixel),
-        reward_manager=get_reward_manager(),
+        observation_keys=obs_keys,
+        reward_manager=get_reward_manager(obs_keys),
         actions=get_actions()
     )
     return env
