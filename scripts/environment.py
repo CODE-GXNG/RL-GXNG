@@ -58,19 +58,22 @@ def get_reward_manager():
 
         return reward 
 
-    reward_manager.add_custom_reward_fn(scout_reward_fn)
+    # reward_manager.add_custom_reward_fn(scout_reward_fn)
 
     return reward_manager
 
-def get_obs_keys():
-    # obs_keys = ('glyphs', 'chars','screen_descriptions', 'glyphs_crop', 'chars_crop', 'screen_descriptions_crop','blstats', 'message', 'inv_strs', 'pixel')
-    obs_keys = ('glyphs','glyphs_crop','blstats','message','inv_glyphs', 'pixel')
-    return obs_keys
+def get_obs_keys(pixel):
+    '''
+        Possible keys: ('glyphs', 'chars','screen_descriptions', 'glyphs_crop', 'chars_crop', 'screen_descriptions_crop','blstats', 'message', 'inv_strs', 'pixel')
 
-def init_env():
+    '''
+    if pixel: return  ('glyphs','glyphs_crop','blstats','inv_glyphs', 'pixel')
+    else:return  ('glyphs','glyphs_crop','blstats','inv_glyphs')
+
+def init_env(pixel=False):
     env = gym.make(
         "MiniHack-Quest-Hard-v0",
-        observation_keys=get_obs_keys(),
+        observation_keys=get_obs_keys(pixel),
         reward_manager=get_reward_manager(),
         actions=get_actions()
     )

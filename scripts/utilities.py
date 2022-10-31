@@ -2,6 +2,7 @@ from PIL import Image
 import gym
 import minihack
 from datetime import datetime
+from environment import init_env
 
 
 def save_gif(gif,path):
@@ -21,17 +22,20 @@ def frames_to_gif(frames):
     return gif
 
 
-def generate_video(model,env,title=None,path='../videos/'):
+def generate_video(model,title=None,path='../videos/'):
     frames = []
-    
+    env = init_env(pixel=True)
     done = False
+    obs = env.reset()
     while not done:
+        del obs['pixel']
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, done, info = env.step(action)
         frames.append(obs["pixel"])
+        
 
     if title is None:
         title = datetime.now().strftime("%d-%m-%Y_%H:%M:%S") 
 
-    gif = frames_to_gif(frames,path+title)
-    save_gif(gif,path)
+    gif = frames_to_gif(frames)
+    save_gif(gif,path+title)

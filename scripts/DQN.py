@@ -1,12 +1,5 @@
 import gym
 import minihack
-import matplotlib.pyplot as plt
-import os
-import numpy as np
-from collections import deque
-import time
-from datetime import datetime
-import random
 from stable_baselines3 import DQN
 from environment import init_env
 from utilities import generate_video
@@ -17,15 +10,26 @@ def main():
     '''
     https://stable-baselines3.readthedocs.io/en/master/modules/dqn.html
     '''
+    MODEL_SAVING_DIR = "../model_saving_dir/"
+    MODEL_NAME = "dqn"
+    MODEL_SAVE_PATH = MODEL_SAVING_DIR+MODEL_NAME
+
     env = init_env()
-    model = DQN("MlpPolicy", env, verbose=1)
-    model.save("../model_saving-dir/dqn")
+    model = DQN("MultiInputPolicy", env, verbose=1)
+
+    model.save(MODEL_SAVE_PATH)
     for i in range(10):
+        print("Starting epoch {}".fomrat(i))
         model.learn(total_timesteps=10, log_interval=4)
-        model.save("../model_saving-dir/dqn")
-        model.save("../model_saving-dir/dqn_{}_timesteps".format(i))
-        generate_video(model,env,title='training_{}'.format(i))
-    model.save("../model_saving-dir/dqn")
+        print("Finished epoch {}".fomrat(i))
+        model.save(MODEL_SAVE_PATH)
+        model.save(MODEL_SAVE_PATH+"{}_timesteps".format(i))
+        print("Saved model checkpoints")
+        generate_video(model,title='training_{}'.format(i))
+    model.save(MODEL_SAVE_PATH)
+    print("Done")
+
+
     
 if __name__ == "__main__":
     main()

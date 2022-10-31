@@ -1,0 +1,1 @@
+Videos generated during the training process should be saved to this folder
