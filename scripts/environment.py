@@ -13,20 +13,20 @@ def get_actions():
     MOVE_ACTIONS = tuple(nethack.CompassDirection)
     NAVIGATE_ACTIONS =  (
         nethack.Command.PICKUP,
-        nethack.Command.APPLY,
-        nethack.Command.FIRE,
+        # nethack.Command.APPLY,
+        # nethack.Command.FIRE,
         nethack.Command.RUSH,
         nethack.Command.ZAP,
-        nethack.Command.PUTON, #armour
-        nethack.Command.READ, # a scroll or spellbook
-        nethack.Command.WEAR,
+        # nethack.Command.PUTON, #armour
+        # nethack.Command.READ, # a scroll or spellbook
+        # nethack.Command.WEAR,
         nethack.Command.QUAFF, #drink
-        nethack.Command.PRAY,
+        # nethack.Command.PRAY,
         nethack.Command.WIELD,
         nethack.Command.OPEN ,
-        nethack.Command.FORCE ,
-        nethack.Command.KICK ,
-        nethack.Command.LOOT ,
+        # nethack.Command.FORCE ,
+        # nethack.Command.KICK ,
+        # nethack.Command.LOOT ,
     )
     return MOVE_ACTIONS + NAVIGATE_ACTIONS
 
@@ -96,14 +96,20 @@ def get_obs_keys(pixel):
     if pixel: return  ('glyphs','glyphs_crop','blstats','inv_glyphs', 'pixel')
     else:return  ('glyphs','glyphs_crop','blstats','inv_glyphs')
 
-def init_env(pixel=False):
+def init_env(pixel=False,custom_reward=True):
     obs_keys = get_obs_keys(pixel)
-    env = gym.make(
-        "MiniHack-Quest-Hard-v0",
-        reward_win=5,
-        reward_lose=-2,
-        observation_keys=obs_keys,
-        reward_manager=get_reward_manager(obs_keys),
-        actions=get_actions()
-    )
-    return env
+    if custom_reward:
+        return gym.make(
+            "MiniHack-Quest-Hard-v0",
+            reward_win=5,
+            reward_lose=-2,
+            observation_keys=obs_keys,
+            reward_manager=get_reward_manager(obs_keys),
+            actions=get_actions()
+        )
+    else:
+        return gym.make(
+            "MiniHack-Quest-Hard-v0",
+            observation_keys=obs_keys,
+            actions=get_actions()
+        )

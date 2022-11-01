@@ -27,16 +27,19 @@ def main():
                                 log_path="../logs/results", eval_freq=500)
 
     callback = CallbackList([checkpoint_callback, eval_callback])
-    
+
     model.save(MODEL_SAVE_PATH)
     for i in range(100):
         print("Starting epoch {}".format(i))
-        model.learn(total_timesteps=10000, log_interval=4)
+        model.learn(total_timesteps=1000000, log_interval=4)
         print("Finished epoch {}".format(i))
         model.save(MODEL_SAVE_PATH)
-        model.save(MODEL_SAVE_PATH+"{}_timesteps".format(i))
+        if i%10==0: 
+            model.save(MODEL_SAVE_PATH+"{}_timesteps".format(i))
+            generate_video(model,title='training_{}'.format(i))
+
+
         print("Saved model checkpoints")
-        generate_video(model,title='training_{}'.format(i))
     model.save(MODEL_SAVE_PATH)
     print("Done")
 

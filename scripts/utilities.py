@@ -24,7 +24,7 @@ def frames_to_gif(frames):
 
 def generate_video(model,title=None,path='../videos/'):
     frames = []
-    env = init_env(pixel=True)
+    env = init_env(pixel=True,custom_reward=True)
     done = False
     obs = env.reset()
     while not done:
