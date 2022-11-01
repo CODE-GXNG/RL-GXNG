@@ -27,10 +27,11 @@ def main():
                                 log_path="../logs/results", eval_freq=500)
 
     callback = CallbackList([checkpoint_callback, eval_callback])
+    
     model.save(MODEL_SAVE_PATH)
-    for i in range(10):
+    for i in range(100):
         print("Starting epoch {}".format(i))
-        model.learn(total_timesteps=1000, log_interval=4)
+        model.learn(total_timesteps=10000, log_interval=4)
         print("Finished epoch {}".format(i))
         model.save(MODEL_SAVE_PATH)
         model.save(MODEL_SAVE_PATH+"{}_timesteps".format(i))

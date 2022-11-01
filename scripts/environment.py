@@ -35,14 +35,14 @@ def get_reward_manager(obs_keys):
     glyph_index = observation_keys.index("glyphs")
 
     reward_manager = RewardManager()
-    reward_manager.add_eat_event("apple", reward=1,terminal_required=False)
+    reward_manager.add_eat_event("apple", reward=1,terminal_required=False,terminal_sufficient=False)
     # reward_manager.add_wield_event("dagger", reward=2)
     reward_manager.add_wield_event("wand", reward=2,terminal_required=False)
     reward_manager.add_location_event("sink", reward=-1, terminal_required=False)
     reward_manager.add_amulet_event(reward=1,terminal_required=False)
     reward_manager.add_kill_event("demon",reward=1,terminal_required=False)
     reward_manager.add_kill_event("monster",reward=1,terminal_required=False)
-    reward_manager.add_kill_event("minotaur",reward=2,terminal_required=False)
+
     # def reward_fn(env, prev_obs, action, next_obs):
     #     reward = 0.0
     #     return reward
@@ -62,18 +62,29 @@ def get_reward_manager(obs_keys):
 
         reward = explored - explored_old
 
-        return reward 
+        return float(reward )
 
 
     reward_manager.add_custom_reward_fn(explore_reward_fn)
 
     reward_manager.add_message_event(
-        ["The door opens.","A copper wand.","A silver wand","The lava cools and solidifies."],
+        ["f - a copper wand.","f - a silver wand","g - a copper wand.","g - a silver wand","f - a uranium wand.","g - a uranium wand"],
+        reward=1,
+        repeatable=True,
+        terminal_required=False,
+        terminal_sufficient=False,
+    )
+
+    reward_manager.add_message_event(
+        ["The door opens.","The lava cools and solidifies."],
         reward=2,
         repeatable=True,
         terminal_required=False,
         terminal_sufficient=False,
     )
+
+    reward_manager.add_kill_event("minotaur",reward=2,terminal_required=True)
+
 
     return reward_manager
 
@@ -89,6 +100,8 @@ def init_env(pixel=False):
     obs_keys = get_obs_keys(pixel)
     env = gym.make(
         "MiniHack-Quest-Hard-v0",
+        reward_win=5,
+        reward_lose=-2,
         observation_keys=obs_keys,
         reward_manager=get_reward_manager(obs_keys),
         actions=get_actions()
