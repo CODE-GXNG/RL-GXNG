@@ -68,7 +68,7 @@ def get_reward_manager(obs_keys):
     reward_manager.add_custom_reward_fn(explore_reward_fn)
 
     reward_manager.add_message_event(
-        ["The door opens.","A copper wand.","A silver wand","The lava cools and solidifies"],
+        ["The door opens.","A copper wand.","A silver wand","The lava cools and solidifies."],
         reward=2,
         repeatable=True,
         terminal_required=False,
