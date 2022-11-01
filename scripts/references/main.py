@@ -12,9 +12,9 @@ from torch.utils.tensorboard import SummaryWriter
 import collections
 import torch.nn.functional as F
 from minihack import RewardManager
-from frame_state import frame_state
-from model import combined
-from agent import Policy_Gradient
+from repo.scripts.references.frame_state import frame_state
+from repo.scripts.references.model import combined
+from repo.scripts.references.agent import Policy_Gradient
 
 '''
 This function contains multiple functions that change the reward earned at a timestep.

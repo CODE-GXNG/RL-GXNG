@@ -35,17 +35,18 @@ def get_reward_manager(obs_keys):
     glyph_index = observation_keys.index("glyphs")
 
     reward_manager = RewardManager()
-    reward_manager.add_eat_event("apple", reward=1)
+    reward_manager.add_eat_event("apple", reward=1,terminal_required=False)
     # reward_manager.add_wield_event("dagger", reward=2)
-    reward_manager.add_wield_event("wand", reward=2)
+    reward_manager.add_wield_event("wand", reward=2,terminal_required=False)
     reward_manager.add_location_event("sink", reward=-1, terminal_required=False)
-    reward_manager.add_amulet_event()
-    reward_manager.add_kill_event("demon")
-
+    reward_manager.add_amulet_event(reward=1,terminal_required=False)
+    reward_manager.add_kill_event("demon",reward=1,terminal_required=False)
+    reward_manager.add_kill_event("monster",reward=1,terminal_required=False)
+    reward_manager.add_kill_event("minotaur",reward=2,terminal_required=False)
     # def reward_fn(env, prev_obs, action, next_obs):
     #     reward = 0.0
     #     return reward
-    def scout_reward_fn(env,last_observation, action, observation):
+    def explore_reward_fn(env,last_observation, action, observation):
         '''
         https://github.com/facebookresearch/nle/blob/0c5d66f8902929ba3963d38780a23ff79b72e7e8/nle/env/tasks.py
         '''
@@ -63,7 +64,16 @@ def get_reward_manager(obs_keys):
 
         return reward 
 
-    reward_manager.add_custom_reward_fn(scout_reward_fn)
+
+    reward_manager.add_custom_reward_fn(explore_reward_fn)
+
+    reward_manager.add_message_event(
+        ["The door opens.","A copper wand.","A silver wand","The lava cools and solidifies"],
+        reward=2,
+        repeatable=True,
+        terminal_required=False,
+        terminal_sufficient=False,
+    )
 
     return reward_manager
 

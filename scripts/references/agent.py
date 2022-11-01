@@ -6,7 +6,7 @@ from torch.distributions import Categorical
 from torch.utils.tensorboard import SummaryWriter
 import collections
 import torch.nn.functional as F
-from model import combined
+from repo.scripts.references.model import combined
 
 class Policy_Gradient(object):
 
