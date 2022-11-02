@@ -9,6 +9,7 @@ import gym
 import time
 import minihack
 from minihack import RewardManager
+from environments import init_env
 
 class NN:
     """
@@ -217,30 +218,30 @@ class NN:
         """
 
         #creating custom reward manger#
-        reward_manager = RewardManager()
+        # reward_manager = RewardManager()
 
-        reward_manager.add_location_event("lava")
+        # reward_manager.add_location_event("lava")
 
         #creating enviroment#
-        env = gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
-        data = env.reset()
+        env = init_env() #gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
+        observation = env.reset()
 
-        state,message = data.values()
+        state  = observation["glyphs"] #,message = data.values()
         prev_state = np.copy(state)
         
         score = 0
 
-        print(env.action_space.n)
-
-        for i in range(0,1000,1):
+        # print(env.action_space.n)
+        done = False
+        while not done:
             X = np.hstack((state.flatten(),prev_state.flatten()))
             #getting policy from network#
             policy = self.feedfoward(X)
-            data,reward,done,_ = env.step(np.armax(policy))
+            observation,reward,done,_ = env.step(np.argmax(policy))
 
             score+=reward
             prev_state = np.copy(state)
-            state,message = data.values()
+            state  = observation["glyphs"] 
         
         return score
 
@@ -832,5 +833,5 @@ if __name__ == "__main__":
 
     random_agent()
 
-    # model = NN(shape=[3318,2000,1000,500,8])
+    # model = NN(shape=[3318,2000,1000,500,10])
     # model.optimise(opti="PSO")
