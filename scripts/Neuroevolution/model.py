@@ -9,7 +9,7 @@ import gym
 import time
 import minihack
 from minihack import RewardManager
-from environments import init_env
+from scripts.environment import init_env
 
 class NN:
     """
