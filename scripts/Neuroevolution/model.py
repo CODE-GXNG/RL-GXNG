@@ -13,7 +13,6 @@ from environment import init_env
 
 
 #GLOBAL#
-GEN = 1
 
 class NN:
     """
@@ -26,6 +25,9 @@ class NN:
         """
         self.W  = []
         self.shape = shape
+        
+        #for incremental learning#
+        self.GEN = 1
 
         #initialises matrices if create is set to true#
         if create == True: 
@@ -230,7 +232,7 @@ class NN:
         # reward_manager.add_location_event("lava")
 
         #creating enviroment#
-        max_step = int((GEN)*100)
+        max_step = int((self.GEN)*100)
         
         
         env = init_env() #gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
@@ -514,7 +516,7 @@ class NN:
                 self.reconstruct(pop[index], shapes)
                 self.save_model(filename='GA_{}'.format(count))
                 
-                GEN+=1
+                self.GEN+=1
             
             if get_iter==True and np.max(costs) == 500:
                 return None, count+1
@@ -728,7 +730,7 @@ class NN:
 
                 self.reconstruct(pop[index], shapes)
                 self.save_model(filename='PSO_{}'.format(count))
-                GEN+=1
+                self.GEN+=1
         
         if get_iter == True:
             return None,N
@@ -797,7 +799,8 @@ class NN:
         a = [] #lower boundaries#
         b = [] #upper boundaries#
         shapes = []
-
+	
+	
         #getting info#
         for w in self.W:
             
