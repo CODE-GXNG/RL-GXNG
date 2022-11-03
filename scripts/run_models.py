@@ -17,15 +17,16 @@ def main():
     MODEL_NAME = "dqn60_timesteps"
     MODEL_SAVE_PATH = MODEL_SAVING_DIR+MODEL_NAME
     log_dir = '../logs/'
-    env = init_env()
+    env = init_env(message=True)
 
     # model = PPO("MultiInputPolicy", env, verbose=1)
-    models = []
+    models = ["model_saving_dir\DQN\dqn0_timesteps",""]
     seeds = np.random.randint(1000, size=10)
 
     performance_data = []
+    subgoal_data = []
     for model_path in models:
-
+        subgoal_counts = np.zeros(3)
         rewards = []
         for seed in seeds:
             env.seed(seed)
@@ -38,11 +39,24 @@ def main():
             while not done:
                 action, _states = model.predict(obs, deterministic=False)
                 obs, r, done, info = env.step(action)
+                messageUINT8 = obs["message"]
+                messageString = "".join([chr(item)  for item in messageUINT8 if chr(item) != "\x00"])
+                if "The door opens." in messageString:
+                    subgoal_counts[0]+=1
+                if "The lava cools and solidifies." in messageString:
+                    subgoal_counts[1]+=1
+                if "You kill the minotaur!" in messageString:
+                    subgoal_counts[2]+=1
                 reward+=r
             rewards.append(reward)
         performance_data.append(rewards)
+        subgoal_counts/=len(seeds)
+        subgoal_data.append(subgoal_counts)
+
     performance_data = np.array(performance_data).T
+    subgoal_data = np.array(subgoal_data).T
     np.savetxt("performance_data.csv", performance_data, delimiter=",")
+    np.savetxt("subgoal_data.csv", subgoal_data, delimiter=",")
 
 
 
