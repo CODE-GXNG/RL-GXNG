@@ -9,7 +9,10 @@ import gym
 import time
 import minihack
 from minihack import RewardManager
-from scripts.environment import init_env
+from environment import init_env
+
+
+#GLOBAL#
 
 class NN:
     """
@@ -22,6 +25,9 @@ class NN:
         """
         self.W  = []
         self.shape = shape
+        
+        #for incremental learning#
+        self.GEN = 1
 
         #initialises matrices if create is set to true#
         if create == True: 
@@ -226,6 +232,9 @@ class NN:
         # reward_manager.add_location_event("lava")
 
         #creating enviroment#
+        max_step = int((self.GEN)*100)
+        
+        
         env = init_env() #gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
         observation = env.reset()
 
@@ -236,7 +245,9 @@ class NN:
 
         # print(env.action_space.n)
         done = False
-        while not done:
+        count = 0
+        
+        while (not done) and (count<=max_step):
             X = np.hstack((state.flatten(),prev_state.flatten()))
             #getting policy from network#
             policy = self.feedfoward(X)
@@ -245,6 +256,8 @@ class NN:
             score+=reward
             prev_state = np.copy(state)
             state  = observation["glyphs"] 
+            
+            count+=1
         
         #closing env#
         env.close()
@@ -502,6 +515,8 @@ class NN:
 
                 self.reconstruct(pop[index], shapes)
                 self.save_model(filename='GA_{}'.format(count))
+                
+                self.GEN+=1
             
             if get_iter==True and np.max(costs) == 500:
                 return None, count+1
@@ -715,6 +730,7 @@ class NN:
 
                 self.reconstruct(pop[index], shapes)
                 self.save_model(filename='PSO_{}'.format(count))
+                self.GEN+=1
         
         if get_iter == True:
             return None,N
@@ -783,7 +799,8 @@ class NN:
         a = [] #lower boundaries#
         b = [] #upper boundaries#
         shapes = []
-
+	
+	
         #getting info#
         for w in self.W:
             
