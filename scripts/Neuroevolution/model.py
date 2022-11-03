@@ -154,7 +154,7 @@ class NN:
         return value
     
     def softmax(self,x):
-        temp = np.exp(X)
+        temp = np.exp(x)
         value = temp/np.sum(temp)
         return value
 
@@ -181,6 +181,9 @@ class NN:
         x = np.array(x)
         x = x.reshape(len(x),1)
 
+        #normalising vector#
+        x = x/np.linalg.norm(x)
+
         for i in range(len(self.W)):
 
             #stacking#
@@ -195,7 +198,7 @@ class NN:
 
             #TODO: relu giving issues
             if i != len(self.W)-1:
-                a = self.activation_function(z,func='relu')
+                a = self.activation_function(z,func='sigmoid')
             else:
                 a = self.activation_function(z,func='softmax')
 
@@ -242,6 +245,9 @@ class NN:
             score+=reward
             prev_state = np.copy(state)
             state  = observation["glyphs"] 
+        
+        #closing env#
+        env.close()
         
         return score
 
@@ -431,7 +437,7 @@ class NN:
         return x,fx,change
 
 
-    def GA(self,a,b,shapes,N,k,m,mu,get_iter=False,learn_curve=False):
+    def GA(self,a,b,shapes,N,k,m,mu,get_iter=False,learn_curve=False,save=10):
         """
             Optimises the Neural Network using 
             Genetic Alogrithm
@@ -481,13 +487,22 @@ class NN:
                 if change == True:
                     x[i] = y.copy()
                     fx[i] = fy
-        
+            
+            print("Gen {} fitness: {}".format(count,np.max(fx)))
             #updating generation#
             pop = x.copy()
             costs = fx.copy()
             best.append(np.max(costs))
             mean.append(np.mean(costs))
 
+
+            #saving models#
+            if count % save == 0:
+                index = np.argmax(costs)
+
+                self.reconstruct(pop[index], shapes)
+                self.save_model(filename='GA_{}'.format(count))
+            
             if get_iter==True and np.max(costs) == 500:
                 return None, count+1
 
@@ -647,7 +662,7 @@ class NN:
         fx = self.fitness(xnew,shape)
         return xnew,fx
 
-    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False):
+    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=10):
         """
             Optimises function using Particle Swarm Optimisation
 
@@ -686,11 +701,20 @@ class NN:
                     global_best = x.copy()
                     global_cost = fx
             
+            print("Gen {} fitness: {}".format(count,global_cost))
+
             best.append(global_cost)
             mean.append(np.mean(costs))
 
             if (get_iter == True) and (global_cost == 500):
                 return None,count+1
+            
+            #saving models#
+            if count % save == 0:
+                index = np.argmax(costs)
+
+                self.reconstruct(pop[index], shapes)
+                self.save_model(filename='PSO_{}'.format(count))
         
         if get_iter == True:
             return None,N
@@ -744,7 +768,7 @@ class NN:
         self.q_sort(x, fx,0,n-1)
 ######################################################################################## 
 #####################################Optimiser ########################################## 
-    def optimise(self,N=200,k=20,m=200,mu=0.3,opti="GA",get_iter=False,learn_curve=False):
+    def optimise(self,N=20,k=5,m=100,mu=0,opti="GA",get_iter=False,learn_curve=False):
         """
             Optimises the Neural Network using 
             Genetic Alogrithm
@@ -795,43 +819,22 @@ class NN:
 ##########################################################################################################################################
 
 def random_agent():
-    #creating custom reward manger#
-    reward_manager = RewardManager()
+    env = init_env() #gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
+    observation = env.reset()
 
-    reward_manager.add_location_event("lava",reward=-100,terminal_sufficient=True)
-    reward_manager.add_wield_event("wand",reward=10,terminal_required=False)
-
-    #creating enviroment#
-    env = gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"),reward_manager=reward_manager)
-    data = env.reset()
-
-    state,message = data.values()
-    prev_state = np.copy(state)
-
-    print(env.action_space.n)
-
+    state  = observation["glyphs"] #,message = data.values()
     score = 0
 
-    for i in range(0,1000,1):
+    print(env.action_space.n)
+    done = False
+    while not done:
+        observation,reward,done,_ = env.step(np.random.randint(0,env.action_space.n))
+        score+=reward
+        state  = observation["glyphs"] 
         
-        X = np.hstack((state.flatten(),prev_state.flatten()))
-
-
-        data,reward,done,_ = env.step(np.random.randint(0,8))
-        env.render()
-        score+= reward
-
-        prev_state = np.copy(state)
-        state,message = data.values()
-
-        if done == True:
-            break
-
     print(score)
 
 if __name__ == "__main__":
 
-    random_agent()
-
-    # model = NN(shape=[3318,2000,1000,500,10])
-    # model.optimise(opti="PSO")
+    model = NN(shape=[3318,1500,200,14])
+    model.optimise(opti="GA")
