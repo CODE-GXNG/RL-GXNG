@@ -65,7 +65,7 @@ def get_reward_manager(obs_keys):
         return float(reward )
 
 
-    reward_manager.add_custom_reward_fn(explore_reward_fn)
+    # reward_manager.add_custom_reward_fn(explore_reward_fn)
 
     reward_manager.add_message_event(
         ["f - a copper wand.","f - a silver wand","g - a copper wand.","g - a silver wand","f - a uranium wand.","g - a uranium wand"],
