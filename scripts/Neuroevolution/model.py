@@ -11,9 +11,6 @@ import minihack
 from minihack import RewardManager
 from environment import init_env
 
-
-#GLOBAL#
-
 class NN:
     """
         Nueral Network that is optimised using hueristics
@@ -25,9 +22,6 @@ class NN:
         """
         self.W  = []
         self.shape = shape
-        
-        #for incremental learning#
-        self.GEN = 1
 
         #initialises matrices if create is set to true#
         if create == True: 
@@ -226,38 +220,29 @@ class NN:
             one run of the simulation
         """
 
-        #creating custom reward manger#
-        # reward_manager = RewardManager()
-
-        # reward_manager.add_location_event("lava")
-
-        #creating enviroment#
-        max_step = int((self.GEN)*100)
-        
-        
-        env = init_env() #gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
+        env = init_env() 
         observation = env.reset()
 
-        state  = observation["glyphs"] #,message = data.values()
+        state  = observation["glyphs"] 
         prev_state = np.copy(state)
         
         score = 0
 
         # print(env.action_space.n)
         done = False
-        count = 0
         
-        while (not done) and (count<=max_step):
+        while not done:
             X = np.hstack((state.flatten(),prev_state.flatten()))
+            
             #getting policy from network#
             policy = self.feedfoward(X)
-            observation,reward,done,_ = env.step(np.argmax(policy))
+            action = np.random.choice(np.arange(len(policy)),p=policy)
+            
+            observation,reward,done,_ = env.step(action)
 
             score+=reward
             prev_state = np.copy(state)
             state  = observation["glyphs"] 
-            
-            count+=1
         
         #closing env#
         env.close()
@@ -515,8 +500,6 @@ class NN:
 
                 self.reconstruct(pop[index], shapes)
                 self.save_model(filename='GA_{}'.format(count))
-                
-                self.GEN+=1
             
             if get_iter==True and np.max(costs) == 500:
                 return None, count+1
@@ -677,7 +660,7 @@ class NN:
         fx = self.fitness(xnew,shape)
         return xnew,fx
 
-    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=10):
+    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=100):
         """
             Optimises function using Particle Swarm Optimisation
 
@@ -728,9 +711,8 @@ class NN:
             if count % save == 0:
                 index = np.argmax(costs)
 
-                self.reconstruct(pop[index], shapes)
+                self.reconstruct(pop[index], shape)
                 self.save_model(filename='PSO_{}'.format(count))
-                self.GEN+=1
         
         if get_iter == True:
             return None,N
@@ -784,7 +766,7 @@ class NN:
         self.q_sort(x, fx,0,n-1)
 ######################################################################################## 
 #####################################Optimiser ########################################## 
-    def optimise(self,N=20,k=5,m=100,mu=0,opti="GA",get_iter=False,learn_curve=False):
+    def optimise(self,N=100,k=20,m=1000,mu=0,opti="GA",get_iter=False,learn_curve=False):
         """
             Optimises the Neural Network using 
             Genetic Alogrithm
@@ -799,8 +781,7 @@ class NN:
         a = [] #lower boundaries#
         b = [] #upper boundaries#
         shapes = []
-	
-	
+
         #getting info#
         for w in self.W:
             
@@ -852,6 +833,7 @@ def random_agent():
     print(score)
 
 if __name__ == "__main__":
-
-    model = NN(shape=[3318,1500,200,14])
-    model.optimise(opti="GA")
+    
+    print("Training begins")
+    model = NN(shape=[3318,1500,750,375,188,94,47,14])
+    model.optimise(opti="PSO")
