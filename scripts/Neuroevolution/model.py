@@ -154,7 +154,7 @@ class NN:
         return value
     
     def softmax(self,x):
-        temp = np.exp(x)
+        temp = np.exp(np.abs(x))
         value = temp/np.sum(temp)
         return value
 
@@ -174,7 +174,7 @@ class NN:
             return self.softmax(x)
         
 #############################################################################################################
-    def feedfoward(self,x0,round=True):
+    def feedfoward(self,x0,round=False):
 
         #reshaping vector#
         x = np.copy(x0)
@@ -236,6 +236,8 @@ class NN:
             
             #getting policy from network#
             policy = self.feedfoward(X)
+            
+            #action = np.argmax(policy)
             action = np.random.choice(np.arange(len(policy)),p=policy)
             
             observation,reward,done,_ = env.step(action)
@@ -660,7 +662,7 @@ class NN:
         fx = self.fitness(xnew,shape)
         return xnew,fx
 
-    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=100):
+    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=10):
         """
             Optimises function using Particle Swarm Optimisation
 
@@ -766,7 +768,7 @@ class NN:
         self.q_sort(x, fx,0,n-1)
 ######################################################################################## 
 #####################################Optimiser ########################################## 
-    def optimise(self,N=100,k=20,m=1000,mu=0,opti="GA",get_iter=False,learn_curve=False):
+    def optimise(self,N=20,k=20,m=100,mu=0,opti="GA",get_iter=False,learn_curve=False):
         """
             Optimises the Neural Network using 
             Genetic Alogrithm
@@ -835,5 +837,5 @@ def random_agent():
 if __name__ == "__main__":
     
     print("Training begins")
-    model = NN(shape=[3318,1500,750,375,188,94,47,14])
+    model = NN(shape=[3318,1500,500,14])
     model.optimise(opti="PSO")
