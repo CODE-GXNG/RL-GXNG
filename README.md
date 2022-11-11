@@ -5,19 +5,19 @@ We provide two different algorithm implementations:
 1. A deep NN policy gradient model trained with PPO
 2. A value based deep Q NN trained with Neuro-evolution.
    
-
+## Scripts
 The scripts folder has a series of python files available for different tasks:
 
-## PPO.py 
+### PPO.py 
 An executable file used to carry out the PPO algorithm from the stable_baselines3 package.\\
 Edit the following variables to configure your run: {MODEL_SAVING_DIR,MODEL_NAME,tmp_path} \\
 The scores data will be saved to the tmp_path. The model will have its checkpoints saved with the name MODEL_NAME to the MODEL_SAVING_DIR
 
-## NE.py 
+### NE.py 
 An An executable file used to carry out the NE algorithm, using both GA and PSO as optimisiers.\\
 The model is saved to output.zip. It can be loaded with the NN.load_model()
 
-## environment.py
+### environment.py
 A module that includes all methods linked to the gym environment. \\
 Specifically, it has four methods: 
 1. get_actions()
@@ -36,7 +36,7 @@ init env(pixel=False,custom reward=True,message=False) function
 produces a gym environment with a custom reward manager; otherwise,
 it returns a gym environment with the default reward manager.
 
-## utilities.py 
+### utilities.py 
 A module that includes all methods for displaying an agent’s performance in its surroundings.\\
 It has three methods: 
 1. frames_to_gif(frames)
@@ -45,4 +45,6 @@ It has three methods:
 
 A list of image objects or gifs is sent to the save gif(gif,path) function, which stores the data at the given path. Using a list of instances of pixel observations as input, the frames_to_gif(frames) function creates a gif using the provided instances of pixel observations. The generate_video(model) function calls on the above methods to generate a gif.
 
+## Requirements
+The requirements.txt file has the list of requirements to run these scripts.
 
