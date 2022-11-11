@@ -10,6 +10,9 @@ import time
 import minihack
 from minihack import RewardManager
 from environment import init_env
+from PIL import Image
+from datetime import datetime
+
 
 class NN:
     """
@@ -154,7 +157,7 @@ class NN:
         return value
     
     def softmax(self,x):
-        temp = np.exp(x)
+        temp = np.exp(np.abs(x))
         value = temp/np.sum(temp)
         return value
 
@@ -174,7 +177,7 @@ class NN:
             return self.softmax(x)
         
 #############################################################################################################
-    def feedfoward(self,x0,round=True):
+    def feedfoward(self,x0,round=False):
 
         #reshaping vector#
         x = np.copy(x0)
@@ -236,6 +239,8 @@ class NN:
             
             #getting policy from network#
             policy = self.feedfoward(X)
+            
+            #action = np.argmax(policy)
             action = np.random.choice(np.arange(len(policy)),p=policy)
             
             observation,reward,done,_ = env.step(action)
@@ -660,7 +665,7 @@ class NN:
         fx = self.fitness(xnew,shape)
         return xnew,fx
 
-    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=100):
+    def PSO(self,a,b,M,N,shape,c1=2,c2=2,get_iter=False,learn_curve = False,save=10):
         """
             Optimises function using Particle Swarm Optimisation
 
@@ -766,7 +771,7 @@ class NN:
         self.q_sort(x, fx,0,n-1)
 ######################################################################################## 
 #####################################Optimiser ########################################## 
-    def optimise(self,N=100,k=20,m=1000,mu=0,opti="GA",get_iter=False,learn_curve=False):
+    def optimise(self,N=20,k=20,m=100,mu=0,opti="GA",get_iter=False,learn_curve=False):
         """
             Optimises the Neural Network using 
             Genetic Alogrithm
@@ -816,24 +821,91 @@ class NN:
         self.save_model()
 ##########################################################################################################################################
 
-def random_agent():
-    env = init_env() #gym.make("MiniHack-River-v0",observation_keys=("glyphs","message"))
-    observation = env.reset()
+#############################################VIDEO GENERATION#############################################################################
+def save_gif(gif,path):
+    '''
+    Args:
+        gif: a list of image objects
+        path: the path to save the gif to
+    '''
+    path=path+'.gif'
+    gif[0].save(path, save_all=True,optimize=False, append_images=gif[1:], loop=0)
+    print("Saved Video")
 
-    state  = observation["glyphs"] #,message = data.values()
-    score = 0
+def frames_to_gif(frames):
+    gif = []
+    for image in frames:
+        gif.append(Image.fromarray(image, "RGB"))
+    return gif
 
-    print(env.action_space.n)
+
+def generate_video(model,title=None,path='../videos/'):
+    frames = []
+    env = init_env(pixel=True,custom_reward=True)
     done = False
+    obs = env.reset()
+
+    state  = obs["glyphs"] 
+    prev_state = np.copy(state)
+
     while not done:
-        observation,reward,done,_ = env.step(np.random.randint(0,env.action_space.n))
-        score+=reward
-        state  = observation["glyphs"] 
+        del obs['pixel']
+
+        X = np.hstack((state.flatten(),prev_state.flatten()))
+            
+        #getting policy from network#
+        policy = model.feedfoward(X)
+    
+        #action = np.argmax(policy)
+        action = np.random.choice(np.arange(len(policy)),p=policy)
+        obs, reward, done, info = env.step(action)
+        frames.append(obs["pixel"])
+
+        prev_state = np.copy(state)
+        state  = obs["glyphs"] 
         
-    print(score)
+
+    if title is None:
+        title = datetime.now().strftime("%d-%m-%Y_%H:%M:%S") 
+
+    gif = frames_to_gif(frames)
+    save_gif(gif,path+title)
+
+
+########################################################################################################################################
+def get_plot():
+    models = ["NE_models/PSO_0.zip","NE_models/PSO_10.zip","NE_models/PSO_20.zip","NE_models/PSO_30.zip","NE_models/PSO_40.zip","NE_models/PSO_50.zip","NE_models/PSO_60.zip","NE_models/PSO_70.zip","NE_models/PSO_80.zip","NE_models/PSO_90.zip","NE_models/output.zip"]
+
+    fitness_values = []
+
+    for model_path in models:
+        model = NN(shape=[2,1,1])
+        model.load_model(model_path)
+        x,shapes = model.flatten()
+        value = model.fitness(x=x, shapes=shapes)
+        fitness_values.append(value)
+    
+    plt.plot(fitness_values)
+    plt.title('Learning Rate',fontsize=15)
+    plt.ylabel('Average reward',fontsize=15)
+    plt.xlabel('Generations (intervals of 10 generations)',fontsize=15)
+    plt.show()
 
 if __name__ == "__main__":
     
-    print("Training begins")
-    model = NN(shape=[3318,1500,750,375,188,94,47,14])
-    model.optimise(opti="PSO")
+    #training#
+    # print("Traaining begins")
+    # model = NN(shape=[3318,1500,500,14])
+    # model.optimise(opti="PSO")
+
+    #GETTING PERFORMANCE DATA#
+    get_plot()
+
+    #GENERATING VIDEO#
+    # model = NN(shape=[1,1])
+    # model.load_model(filename="NE_models/output.zip")
+
+    # for i in range(100):
+    #     generate_video(model)
+    
+
