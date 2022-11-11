@@ -16,6 +16,9 @@ def save_gif(gif,path):
     print("Saved Video")
 
 def frames_to_gif(frames):
+    '''
+    Converts a list of pixel value arrays to a gif list of images
+    '''
     gif = []
     for image in frames:
         gif.append(Image.fromarray(image, "RGB"))
@@ -23,6 +26,15 @@ def frames_to_gif(frames):
 
 
 def generate_video(model,title=None,path='../videos/'):
+    '''
+    Generates a gif for a model, saves it
+    Args:
+        model - a class with a predict method that takes in a state observation and returns an action
+        title - the title of the gif 
+        the path to save the gif to
+    Ret:
+        None
+    '''
     frames = []
     env = init_env(pixel=True,custom_reward=True)
     done = False

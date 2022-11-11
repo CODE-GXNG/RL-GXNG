@@ -6,7 +6,10 @@ import numpy as np
 
 
 def get_actions():
+    
     '''
+    Utility function for the init_env method
+    
     https://nethackwiki.com/wiki/Commands
     https://github.com/facebookresearch/nle/blob/091f1c18a10a4b4c497f8adda046794081f78105/nle/nethack/actions.py
     '''
@@ -31,6 +34,9 @@ def get_actions():
     return MOVE_ACTIONS + NAVIGATE_ACTIONS
 
 def get_reward_manager(obs_keys):
+    '''
+    Utility function for the init_env() function
+    '''
     observation_keys = list(obs_keys)
     glyph_index = observation_keys.index("glyphs")
 
@@ -90,8 +96,11 @@ def get_reward_manager(obs_keys):
 
 def get_obs_keys(pixel,message):
     '''
+        This is a utility function for init_env()
         Possible keys: ('glyphs', 'chars','screen_descriptions', 'glyphs_crop', 'chars_crop', 'screen_descriptions_crop','blstats', 'message', 'inv_strs', 'pixel')
-
+        Args:
+            pixel (boolean), set to true if you want to include the pixel data in the obs state 
+            message (boolean), set to true if you want to include the message data in the obs state
     '''
 
     if pixel and message:   return  ('glyphs','glyphs_crop','blstats','inv_glyphs', 'pixel','message')
@@ -100,6 +109,15 @@ def get_obs_keys(pixel,message):
     else:                   return  ('glyphs','glyphs_crop','blstats','inv_glyphs')
 
 def init_env(pixel=False,custom_reward=True,message=False):
+    '''
+    Initialises the MiniHack-Quest-Hard-v0 environment
+    Args:
+        pixel=False (boolean), set to true if you want to include the pixel data in the obs state 
+        message=False (boolean), set to true if you want to include the message data in the obs state
+        custom_reward=True (boolean), set to False if you do not want to use the custom reward
+    Ret:
+        A gym environment object
+    '''
     obs_keys = get_obs_keys(pixel,message)
     if custom_reward:
         return gym.make(
