@@ -873,23 +873,36 @@ def generate_video(model,title=None,path='../videos/'):
 
 
 ########################################################################################################################################
-def get_plot():
-    models = ["NE_models/PSO_0.zip","NE_models/PSO_10.zip","NE_models/PSO_20.zip","NE_models/PSO_30.zip","NE_models/PSO_40.zip","NE_models/PSO_50.zip","NE_models/PSO_60.zip","NE_models/PSO_70.zip","NE_models/PSO_80.zip","NE_models/PSO_90.zip","NE_models/output.zip"]
+def get_plot(rep=10):
+	models = ["NE_models/GA_0.zip","NE_models/GA_10.zip","NE_models/GA_20.zip","NE_models/GA_30.zip","NE_models/GA_40.zip","NE_models/GA_50.zip","NE_models/GA_60.zip","NE_models/GA_70.zip","NE_models/GA_80.zip","NE_models/GA_90.zip","NE_models/output.zip"]
 
-    fitness_values = []
+	X = []
 
-    for model_path in models:
-        model = NN(shape=[2,1,1])
-        model.load_model(model_path)
-        x,shapes = model.flatten()
-        value = model.fitness(x=x, shapes=shapes)
-        fitness_values.append(value)
-    
-    plt.plot(fitness_values)
-    plt.title('Learning Rate',fontsize=15)
-    plt.ylabel('Average reward',fontsize=15)
-    plt.xlabel('Generations (intervals of 10 generations)',fontsize=15)
-    plt.show()
+	for _ in range(rep):
+		fitness_values = []
+
+		for model_path in models:
+			model = NN(shape=[2,1,1])
+			model.load_model(model_path)
+			x,shapes = model.flatten()
+			value = model.fitness(x=x, shapes=shapes)
+			fitness_values.append(value)
+		
+		X.append(fitness_values)
+
+	X = np.array(X)
+	data = []
+	for i in range(0,len(models),1):
+		value = X[:,i].mean()
+		data.append(value)
+	
+	np.savetxt("GA_data.csv",X,delimiter=",")
+			
+	plt.plot(fitness_values)
+	plt.title('Learning Rate',fontsize=15)
+	plt.ylabel('Average reward',fontsize=15)
+	plt.xlabel('Generations (intervals of 10 generations)',fontsize=15)
+	plt.savefig('GA.png')
 
 if __name__ == "__main__":
     
@@ -902,10 +915,10 @@ if __name__ == "__main__":
     get_plot()
 
     #GENERATING VIDEO#
-    # model = NN(shape=[1,1])
-    # model.load_model(filename="NE_models/output.zip")
+    #model = NN(shape=[1,1])
+    #model.load_model(filename="NE_models/output.zip")
 
-    # for i in range(100):
-    #     generate_video(model)
+    #for i in range(100):
+    	#generate_video(model)
     
 
