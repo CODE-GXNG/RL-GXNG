@@ -14,7 +14,7 @@ Edit the following variables to configure your run: {MODEL_SAVING_DIR,MODEL_NAME
 The scores data will be saved to the tmp_path. The model will have its checkpoints saved with the name MODEL_NAME to the MODEL_SAVING_DIR
 
 ### NE.py 
-An An executable file used to carry out the NE algorithm, using both GA and PSO as optimisiers.\\
+An An executable file used to implement a the Value based NN optimised with the NE algorithm, using both GA and PSO as optimisiers.\\
 The model is saved to output.zip. It can be loaded with the NN.load_model()
 
 ### environment.py
