@@ -9,16 +9,20 @@ We provide two different algorithm implementations:
 The scripts folder has a series of python files available for different tasks:
 
 ### PPO.py 
-An executable file used to carry out the PPO algorithm from the stable_baselines3 package.\\
-Edit the following variables to configure your run: {MODEL_SAVING_DIR,MODEL_NAME,tmp_path} \\
+An executable file used to carry out the PPO algorithm from the stable_baselines3 package.
+
+Edit the following variables to configure your run: {MODEL_SAVING_DIR,MODEL_NAME,tmp_path} 
+
 The scores data will be saved to the tmp_path. The model will have its checkpoints saved with the name MODEL_NAME to the MODEL_SAVING_DIR
 
 ### NE.py 
-An An executable file used to implement a the Value based NN optimised with the NE algorithm, using both GA and PSO as optimisiers.\\
+An An executable file used to implement a the Value based NN optimised with the NE algorithm, using both GA and PSO as optimisiers.
+
 The model is saved to output.zip. It can be loaded with the NN.load_model()
 
 ### environment.py
-A module that includes all methods linked to the gym environment. \\
+A module that includes all methods linked to the gym environment. 
+
 Specifically, it has four methods: 
 1. get_actions()
 1. get_reward manager(obskeys)
@@ -37,7 +41,8 @@ produces a gym environment with a custom reward manager; otherwise,
 it returns a gym environment with the default reward manager.
 
 ### utilities.py 
-A module that includes all methods for displaying an agent’s performance in its surroundings.\\
+A module that includes all methods for displaying an agent’s performance in its surroundings.
+
 It has three methods: 
 1. frames_to_gif(frames)
 1. generate_video(model)
