@@ -60,4 +60,7 @@ Note that the following code bases are utilised heavily and must be installed to
 2. [Minihack](https://github.com/facebookresearch/minihack)
 3. [Nethack](https://github.com/facebookresearch/nle)
 
+## Other folders
+model_saving_dir/ and logs/ are example directories where training logs and trained models might be saved. These directories are referenced in the various python files in scripts. Note that these directories are empty, they are only here to serve as examples. 
+
 
