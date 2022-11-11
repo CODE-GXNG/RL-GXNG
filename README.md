@@ -1,6 +1,8 @@
 # ReinforcementLearning-Minihack-QuestHard-v0
 This repository is the source code for creating an agent to complete the Minihack-Quest-Hard-v0 environment. 
 
+![Our agent playing the game](https://github.com/CODE-GXNG/ReinforcementLearning-Minihack-QuestHard-v0/blob/main/videos/PPO_agent/PPO_GIF_90.gif)
+
 We provide two different algorithm implementations:
 1. A deep NN policy gradient model trained with PPO
 2. A value based deep Q NN trained with Neuro-evolution.
@@ -9,7 +11,7 @@ We provide two different algorithm implementations:
 The scripts folder has a series of python files available for different tasks:
 
 ### PPO.py 
-An executable file used to carry out the PPO algorithm from the stable_baselines3 package.
+An executable file used to carry out the PPO algorithm from the [stable_baselines3]( https://stable-baselines3.readthedocs.io/en/master/ ) package.
 
 Edit the following variables to configure your run: {MODEL_SAVING_DIR,MODEL_NAME,tmp_path} 
 
@@ -52,4 +54,10 @@ A list of image objects or gifs is sent to the save gif(gif,path) function, whic
 
 ## Requirements
 The requirements.txt file has the list of requirements to run these scripts.
+
+Note that the following code bases are utilised heavily and must be installed to utilise this repository:
+1. [stable_baselines3]( https://stable-baselines3.readthedocs.io/en/master/ )
+2. [Minihack](https://github.com/facebookresearch/minihack)
+3. [Nethack](https://github.com/facebookresearch/nle)
+
 
